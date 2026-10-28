@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SDOC · Gwenfred Tham</title>
+<meta name="description" content="Shipping document verification: compares a Shipping Instruction with the carrier&#x27;s draft Bill of Lading and routes doubtful cases to a person.">
+<meta property="og:title" content="SDOC · Gwenfred Tham">
+<meta property="og:description" content="Shipping document verification: compares a Shipping Instruction with the carrier&#x27;s draft Bill of Lading and routes doubtful cases to a person.">
+<meta property="og:image" content="https://tofui03.github.io/assets/bjpos-till.webp">
+<link rel="stylesheet" href="../site.css">
+<link rel="stylesheet" href="../case.css">
+</head>
+<body class="case">
+<header class="wrap topbar"><a href="../index.html" class="home-link">Gwenfred Tham</a><nav><a href="../index.html#work">Work</a><a href="../assets/Gwenfred_Tham_Resume.pdf">Resume</a><a href="mailto:gwenfredtham@gmail.com">Email</a></nav></header>
+<main class="wrap">
+  <section class="case-hero">
+    <p class="eyebrow">Hackathon project · 2026</p>
+    <h1>SDOC</h1>
+    <p class="tagline">Shipping document verification: compares a Shipping Instruction with the carrier's draft Bill of Lading and routes doubtful cases to a person.</p>
+    <p class="actions"><a class="btn" href="https://github.com/Tofui03/sdoc-shipping-verification">Repo</a><a class="btn" href="https://hackaton-the-farmer-1.onrender.com/">Live demo</a><span class="note">Free hosting: the first load can take up to a minute</span></p>
+    <figure class="hero-shot"><span class="det">doc_verification</span><img src="../assets/sdoc-console.webp" width="1280" height="720" alt="SDOC case list with totals for complete, needs-review, mismatch and clean-match cases."><figcaption>Case list on the live demo, loaded with 250 synthetic test cases.</figcaption></figure>
+  </section>
+  <section><h2>The problem</h2><p>Before cargo ships, an operator checks the shipper's Shipping Instruction (SI) against the carrier's draft Bill of Lading (BL). Parties, ports, container count and weight all have to agree, and the documents arrive as email attachments in mixed formats. A false "all clear" is the expensive mistake, so the system has to say when it is not sure instead of guessing.</p></section>
+  <section><h2>What it does</h2><ul>
+<li>Reads an inbound email and decides whether it is a document-comparison request.</li>
+<li>Works out which attachment is the SI and which is the BL (.txt, .docx, .xlsx or .pdf).</li>
+<li>Extracts seven fields: shipper, consignee, notify party, port of loading, port of discharge, container count and gross weight (kg).</li>
+<li>Compares them field by field as MATCH or MISMATCH; missing or ambiguous values become NEEDS_REVIEW instead of a clean result.</li>
+<li>A React console with a case list, case detail and a review workspace where a person corrects a value and records a rationale.</li>
+</ul></section>
+  <section><h2>How it works</h2><ol class="flow"><li><b>1 · Classify</b><span>Deterministic rules first. Only if they are inconclusive and an LLM adapter is attached is the model asked.</span><code>src/pipeline/stage1_classify.py</code></li><li><b>2 · Bind roles</b><span>Decide which document is the SI and which is the BL.</span><code>stage2_role_binding.py</code></li><li><b>3 · Extract</b><span>Parse the attachment and normalise text and units for the seven fields.</span><code>src/parsers · src/normalization</code></li><li><b>4 · Compare</b><span>One strategy per field: exact text, container count, gross weight.</span><code>src/comparator</code></li><li><b>5 · Review</b><span>Unresolved cases open a review issue. A correction creates a new revision and the fields are compared again.</span><code>src/hitl</code></li></ol><p class="flow-note">FastAPI app in app.py; React 18 console in frontend/.</p><figure class="shot"><img src="../assets/sdoc-review.webp" width="1280" height="720" loading="lazy" alt="Human review workspace comparing SI and BL values per field, with an active issue for a missing gross weight."><figcaption>Review workspace: SI and BL side by side, with an open issue for a missing gross weight.</figcaption></figure><p class="note small">The live demo runs on synthetic test cases, not real shipping data.</p></section>
+  <section><h2>Hard parts and decisions</h2><dl>
+<dt>Rules first, LLM optional</dt><dd>The classifier tries deterministic rules before anything else, and field comparison is always rule-based. The Gemini adapter is optional and not attached by default, so a normal run stays on the rule path and sends unresolved cases to review.</dd>
+<dt>Evidence must be quoted</dt><dd>When the model is used, every piece of evidence it claims has to appear word for word in the source text. High confidence does not override an ungrounded quote.</dd>
+<dt>"About 22,000 kg" is not a number</dt><dd>Weights containing words such as APPROX, ABOUT, TBD or N/A, or ranges such as "20 to 22", are rejected as ambiguous instead of being parsed into a clean value. Metric tons are converted to kilograms.</dd>
+<dt>Revisions, not overwrites</dt><dd>A review update must name the revision it was made against; a stale update is rejected. Each accepted correction becomes a new revision with its own evidence record.</dd>
+</dl></section>
+  <section><h2>Stack</h2><ul class="tags"><li>Python 3.12</li><li>FastAPI</li><li>Pydantic v2</li><li>pytest</li><li>React 18</li><li>TypeScript</li><li>Vite</li><li>Tailwind</li><li>Vitest</li><li>Gemini (optional)</li></ul>
+    <p class="actions"><a class="btn" href="https://github.com/Tofui03/sdoc-shipping-verification">View the repo</a><a class="btn" href="https://hackaton-the-farmer-1.onrender.com/">Live demo</a></p></section>
+  <section class="next"><h2>More work</h2><div class="next-grid"><a href="deeppcb-aoi.html"><span>DeepPCB-AOI</span>Flags copper defects on bare PCBs and decides pass, rework or scrap, with the reason attached.</a><a href="bj-pos.html"><span>BJ-POS</span>Moves a hardware store in Keningau, Sabah off paper books with an offline till that tracks stock as it sells.</a></div></section>
+</main>
+<footer class="wrap foot"><p><a href="../index.html">Back to home</a> · <a href="https://github.com/Tofui03">GitHub</a> · <a href="https://www.linkedin.com/in/gwenfred-tham-262545183">LinkedIn</a> · <a href="mailto:gwenfredtham@gmail.com">gwenfredtham@gmail.com</a></p></footer>
+</body>
+</html>

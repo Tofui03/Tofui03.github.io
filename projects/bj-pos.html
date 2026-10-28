@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BJ-POS · Gwenfred Tham</title>
+<meta name="description" content="An offline point-of-sale and inventory system for a hardware and building-materials shop in Keningau, Sabah.">
+<meta property="og:title" content="BJ-POS · Gwenfred Tham">
+<meta property="og:description" content="An offline point-of-sale and inventory system for a hardware and building-materials shop in Keningau, Sabah.">
+<meta property="og:image" content="https://tofui03.github.io/assets/bjpos-till.webp">
+<link rel="stylesheet" href="../site.css">
+<link rel="stylesheet" href="../case.css">
+</head>
+<body class="case">
+<header class="wrap topbar"><a href="../index.html" class="home-link">Gwenfred Tham</a><nav><a href="../index.html#work">Work</a><a href="../assets/Gwenfred_Tham_Resume.pdf">Resume</a><a href="mailto:gwenfredtham@gmail.com">Email</a></nav></header>
+<main class="wrap">
+  <section class="case-hero">
+    <p class="eyebrow">Client project · in-store rollout Nov 2026</p>
+    <h1>BJ-POS</h1>
+    <p class="tagline">An offline point-of-sale and inventory system for a hardware and building-materials shop in Keningau, Sabah.</p>
+    <p class="actions"><a class="btn" href="https://github.com/Tofui03/BJ-POS">Repo</a><span class="note">Desktop app · demo video coming</span></p>
+    <figure class="hero-shot"><span class="det">retail_till</span><img src="../assets/bjpos-till.webp" width="1280" height="720" alt="BJ-POS till: category rail, product grid and a cart totalling RM 442.00."><figcaption>The till: category rail, product grid and cart, laid out for a 15.6-inch touchscreen.</figcaption></figure>
+  </section>
+  <section><h2>The problem</h2><p>The shop kept its sales and stock on paper. That makes simple questions slow to answer: what is left on the shelf, what sold today, and which contractor still owes money. The counter is busy, goods are sold by the bag, the bundle, the piece, the kilo and the foot, and a sale cannot wait for a network connection.</p></section>
+  <section><h2>What it does</h2><ul>
+<li>A touchscreen till with large controls: category rail, product grid and cart, priced per bag, bundle, piece, kg, ft or metre.</li>
+<li>Deducts stock on every sale and blocks a sale that would take a tracked item below zero. Voiding a sale puts the stock back.</li>
+<li>Inventory overview with Low Stock, In Stock and Untracked status against a low-stock threshold (5 by default).</li>
+<li>Cash, card, QR, bank transfer and contractor credit (hutang); thermal receipts, and A4 delivery orders printed as a store copy and a customer copy.</li>
+<li>Owner sales report by day, week or month. Close Day writes an Excel workbook and queues it for a private Google Drive folder with a SQLite snapshot.</li>
+<li>Screens in Chinese, English or Malay.</li>
+</ul></section>
+  <section><h2>How it works</h2><ol class="flow"><li><b>Vue till</b><span>Screens, cart and dialogs. Talks to exactly one repository interface.</span><code>apps/pos</code></li><li><b>Domain rules</b><span>Money, quantities, pricing, orders, receipts and stock planning. Pure functions, no I/O.</span><code>packages/core</code></li><li><b>Repository</b><span>SQLite schema, migrations and SqlPosRepo, written with Drizzle ORM.</span><code>packages/data</code></li><li><b>IPC write queue</b><span>In Electron, statements go over IPC to the main process through one shared queue.</span><code>apps/pos/src/ipc-driver.ts</code></li><li><b>SQLite file</b><span>better-sqlite3 in the main process writes the shop database on the till itself. In browser development the same repository runs on sql.js.</span><code>apps/pos/electron/main.ts</code></li></ol><p class="flow-note">Close Day: Excel workbook + SQLite snapshot → outbox → Google Drive, retried while the till is offline.</p><figure class="shot"><img src="../assets/bjpos-inventory.webp" width="1280" height="720" loading="lazy" alt="Inventory overview listing items with current stock and Low Stock, In Stock or Untracked status."><figcaption>Inventory overview. Two items at 5 are flagged Low Stock; items without a count show Untracked.</figcaption></figure><figure class="shot"><img src="../assets/bjpos-report.webp" width="1280" height="720" loading="lazy" alt="Owner sales report for one day: total by payment channel and items ranked by revenue."><figcaption>Owner sales report: totals by payment method and items ranked by revenue.</figcaption></figure><p class="note small">Screenshots are from the repo's browser development build with its built-in product list. Stock levels on the inventory screen were set with the app's own +5 / +10 buttons.</p></section>
+  <section><h2>Hard parts and decisions</h2><dl>
+<dt>No floating-point money</dt><dd>Money is stored as integer cents and measured quantities as integer milli-units, so 1.250 kg is <code>1250</code>. <code>decimal.js</code> is used only where the UI converts to and from those integers, so rounding happens in one place.</dd>
+<dt>One write queue</dt><dd>All renderer writes share one IPC queue, so two transactions can never interleave their <code>BEGIN</code> and <code>COMMIT</code>.</dd>
+<dt>Stock checked before anything is written</dt><dd><code>planStockDeduction</code> in <code>packages/core</code> checks every line of an order against stock first and refuses with "not enough stock" if a tracked item would go negative. Items without a stock count are marked Untracked and still sell.</dd>
+<dt>Stock can't be restored twice</dt><dd>Voiding checks the order's current voided state inside the transaction, so a double void cannot return the same stock twice.</dd>
+<dt>The shop's day, not the clock's</dt><dd>A business day ends when someone presses Close Day, not at midnight; later sales count toward the next day.</dd>
+<dt>Never lose the shop database</dt><dd>Schema changes only add columns. The update script builds first and installs only if the build succeeds, so a failed build leaves the working till alone.</dd>
+</dl></section>
+  <section><h2>Stack</h2><ul class="tags"><li>TypeScript</li><li>Vue 3</li><li>Pinia</li><li>UnoCSS</li><li>Electron</li><li>better-sqlite3</li><li>sql.js</li><li>Drizzle ORM</li><li>Vitest</li><li>pnpm workspaces</li></ul>
+    <p class="actions"><a class="btn" href="https://github.com/Tofui03/BJ-POS">View the repo</a></p></section>
+  <section class="next"><h2>More work</h2><div class="next-grid"><a href="deeppcb-aoi.html"><span>DeepPCB-AOI</span>Flags copper defects on bare PCBs and decides pass, rework or scrap, with the reason attached.</a><a href="sdoc.html"><span>SDOC</span>Checks a Shipping Instruction against the draft Bill of Lading field by field and sends anything unclear to a reviewer.</a></div></section>
+</main>
+<footer class="wrap foot"><p><a href="../index.html">Back to home</a> · <a href="https://github.com/Tofui03">GitHub</a> · <a href="https://www.linkedin.com/in/gwenfred-tham-262545183">LinkedIn</a> · <a href="mailto:gwenfredtham@gmail.com">gwenfredtham@gmail.com</a></p></footer>
+</body>
+</html>
