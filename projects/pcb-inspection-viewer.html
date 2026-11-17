@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PCB Inspection Viewer · Gwenfred Tham</title>
+<meta name="description" content="A .NET 8 desktop station for DeepPCB-AOI: inspect, batch, history and a daily yield dashboard, plus guarded English or Chinese questions turned into read-only SQL.">
+<meta property="og:title" content="PCB Inspection Viewer · Gwenfred Tham">
+<meta property="og:description" content="A .NET 8 desktop station for DeepPCB-AOI: inspect, batch, history and a daily yield dashboard, plus guarded English or Chinese questions turned into read-only SQL.">
+<meta property="og:image" content="https://tofui03.github.io/assets/bjpos-till.webp">
+<link rel="stylesheet" href="../site.css">
+<link rel="stylesheet" href="../case.css">
+</head>
+<body class="case">
+<header class="wrap topbar"><a href="../index.html" class="home-link">Gwenfred Tham</a><nav><a href="../index.html#work">Work</a><a href="../assets/Gwenfred_Tham_Resume.pdf">Resume</a><a href="mailto:gwenfredtham@gmail.com">Email</a></nav></header>
+<main class="wrap">
+  <section class="case-hero">
+    <p class="eyebrow">Personal project · Nov 2026</p>
+    <h1>PCB Inspection Viewer</h1>
+    <p class="tagline">A C# desktop station for DeepPCB-AOI. The operator inspects a board, runs a batch, and reviews history in the app. Questions in English or Chinese become read-only SQL. The model never decides the verdict.</p>
+    <p class="actions"><a class="btn" href="https://github.com/Tofui03/pcb-inspection-viewer">Repo</a><a class="btn" href="deeppcb-aoi.html">Backend case study</a></p>
+    <figure class="hero-shot"><span class="det">inspection_client</span><img src="../assets/deeppcb-boxes.webp" width="960" height="540" alt="DeepPCB-AOI backend detection output: a golden template, the test board with detector boxes, and the difference map. This is not a screenshot of the PCB Inspection Viewer desktop UI."><figcaption>Detection output from the DeepPCB-AOI backend (template, test image with boxes, difference map). This page does not show the desktop UI.</figcaption></figure>
+  </section>
+  <section><h2>The problem</h2><p>DeepPCB-AOI already returns PASS, REWORK or SCRAP. A line operator still has to inspect a board, run a folder of boards as a batch, and look back through what was inspected. They also ask about yield and defects in plain English or Chinese instead of writing SQL. A language model may explain a result or draft that query. It must never decide or change the verdict.</p></section>
+  <section><h2>What it does</h2><ul>
+<li><b>Inspect.</b> A canvas with zoom and pan. The operator switches the image among the test board, the golden template and a difference heatmap, and can show or hide defect boxes. The side panel lists an IPC-A-600 breakdown of each defect's decision.</li>
+<li><b>Batch.</b> A folder scan pairs <code>&lt;id&gt;_test.jpg</code> with <code>&lt;id&gt;_temp.jpg</code>. The runner uses 1 to 8 workers, capped with <code>SemaphoreSlim</code>.</li>
+<li><b>History.</b> EF Core stores inspections in SQLite. The history grid is virtualized. Images are cached as SHA-256 named PNG files. Double-click drills back into that inspection.</li>
+<li><b>Daily dashboard.</b> For the chosen local day: yield, rework and scrap counts, the top 3 defect classes, and hourly throughput across 24 hours.</li>
+<li><b>Export.</b> CSV written as UTF-8 with a byte-order mark, so Excel keeps English and Chinese text, and an A4 PDF summary through QuestPDF. The README calls that PDF a one-page quality audit.</li>
+<li><b>Ask.</b> A question in English or Chinese is turned into a single read-only SQL statement and run only through SqlGuard.</li>
+</ul></section>
+  <section><h2>Guardrails</h2><ol class="flow"><li><b>1 · Verdicts</b><span>PASS, REWORK and SCRAP come only from DeepPCB-AOI's rule engine. The model explains and helps explore. It does not compute or override a disposition.</span><code>docs/architecture.md</code></li><li><b>2 · SqlGuard</b><span>The connection opens read-only and runs <code>PRAGMA query_only = ON</code>. A query may read only <code>v_inspections</code>, <code>v_defects</code> and <code>v_batches</code> (a <code>WITH</code> clause may name its own CTEs). Comments, a second statement, and keywords for DDL, DML, PRAGMA and related commands are rejected. The statement is wrapped as <code>SELECT * FROM (…) LIMIT 500</code>. Execution is cancelled after 2 seconds. Every attempt, including a rejection, is written to the query log.</span><code>Sql/SqlGuard.cs</code></li><li><b>3 · Summaries</b><span>Gemini or OpenAI must return JSON with a headline and a yield statement. The summary is rejected if it claims every board passed while rework or scrap is present, if a halted line is not mentioned, or if a number in the headline or yield statement is not one of the inspection facts (the yield figure may sit within 0.15 of the computed yield). A rejected or failed call is replaced by the deterministic template. With no model configured, that template is used directly, and Ask falls back to a few fixed queries for common words such as yield, defect, halt and scrap, in English or Chinese.</span><code>Llm/SummaryValidator.cs</code></li></ol><p class="flow-note">The WPF shell is in src/PcbInspectionViewer.App. The rules above live in PcbInspectionViewer.Core, which does not reference WPF.</p></section>
+  <section><h2>Engineering</h2><ul>
+<li>.NET 8. The app is WPF (<code>net8.0-windows</code>). View models use CommunityToolkit.Mvvm and live in the Core library, which targets <code>net8.0</code> and has no WPF references.</li>
+<li><code>Directory.Build.props</code> sets <code>TreatWarningsAsErrors</code>.</li>
+<li>xUnit covers the Core library, the view models, and an integration project. The integration test calls <code>/api/health</code> and, when the backend is up and the mock board images are on disk, <code>POST /api/upload-triage</code>.</li>
+<li>GitHub Actions on Linux checks out DeepPCB-AOI, builds its Docker image, polls <code>http://localhost:8000/api/health</code>, then runs the Core tests and the integration tests with <code>TEST_BACKEND_URL</code> pointed at that container. A separate workflow runs gitleaks.</li>
+</ul></section>
+  <section><h2>Stack</h2><ul class="tags"><li>C#</li><li>.NET 8</li><li>WPF</li><li>MVVM</li><li>EF Core</li><li>SQLite</li><li>QuestPDF</li><li>xUnit</li><li>GitHub Actions</li></ul>
+    <p class="actions"><a class="btn" href="https://github.com/Tofui03/pcb-inspection-viewer">View the repo</a><a class="btn" href="deeppcb-aoi.html">DeepPCB-AOI backend</a></p></section>
+  <section class="next"><h2>More work</h2><div class="next-grid"><a href="deeppcb-aoi.html"><span>Previous · DeepPCB-AOI</span>Finds six kinds of copper defect on bare PCBs (0.94 F1 on the 500-pair DeepPCB test set with a 3-channel YOLOv8n) and decides pass, rework or scrap, with the reason attached.</a><a href="bj-pos.html"><span>Next · BJ-POS</span>Moves a hardware store in Keningau, Sabah off paper books with an offline till that tracks stock as it sells and reconciles the cash drawer at close.</a></div></section>
+</main>
+<footer class="wrap foot"><p><a href="../index.html">Back to home</a> · <a href="https://github.com/Tofui03">GitHub</a> · <a href="https://www.linkedin.com/in/gwenfred-tham-262545183">LinkedIn</a> · <a href="mailto:gwenfredtham@gmail.com">gwenfredtham@gmail.com</a></p></footer>
+</body>
+</html>

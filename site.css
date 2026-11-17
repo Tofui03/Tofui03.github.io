@@ -24,7 +24,7 @@ h1{font-size:3rem;line-height:1.1;margin:0 0 22px;letter-spacing:-.02em;font-wei
 .contact a.resume:hover{background:#05663a;color:var(--on-accent)}
 .sec{font:600 13px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:56px 0 18px;display:flex;align-items:center;gap:12px}
 .sec::after{content:"";flex:1;height:1px;background:var(--line)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
 .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
 .card::before,.card::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--accent);pointer-events:none}
 .card::before{top:-6px;left:-6px;border-right:0;border-bottom:0}

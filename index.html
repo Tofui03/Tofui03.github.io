@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gwenfred Tham · Computer vision &amp; applied AI engineer</title>
-<meta name="description" content="Gwenfred Tham builds computer vision and applied AI systems: PCB defect inspection, an offline till for a hardware store, and shipping document verification.">
-<meta property="og:title" content="Gwenfred Tham · Computer vision &amp; applied AI engineer">
-<meta property="og:description" content="Gwenfred Tham builds computer vision and applied AI systems: PCB defect inspection, an offline till for a hardware store, and shipping document verification.">
+<title>Gwenfred Tham · AI engineer · LLM applications &amp; computer vision</title>
+<meta name="description" content="Gwenfred Tham builds tested LLM and computer vision systems: LLM document verification, PCB defect inspection with a 0.94 F1 detector, and a desktop inspection client with guarded natural-language-to-SQL.">
+<meta property="og:title" content="Gwenfred Tham · AI engineer · LLM applications &amp; computer vision">
+<meta property="og:description" content="Gwenfred Tham builds tested LLM and computer vision systems: LLM document verification, PCB defect inspection with a 0.94 F1 detector, and a desktop inspection client with guarded natural-language-to-SQL.">
 <meta property="og:image" content="https://tofui03.github.io/assets/bjpos-till.webp">
 <link rel="stylesheet" href="site.css">
 </head>
 <body class="home">
 <header class="wrap hero">
-  <p class="eyebrow">Computer vision &amp; applied AI engineer</p>
+  <p class="eyebrow">AI engineer · LLM applications &amp; computer vision</p>
   <h1><span class="box">Gwenfred Tham</span></h1>
-  <p class="lede">I'm Gwenfred Tham, a Computer Science (AI) graduate from APU in Kuala Lumpur. I build computer vision and applied AI systems for real problems, from PCB inspection on a factory line to the till at a real hardware store.</p>
+  <p class="lede">I'm Gwenfred Tham, a Computer Science (AI) graduate from APU in Kuala Lumpur. I build LLM applications and computer vision systems for real problems, from shipping-document checks to PCB inspection on a factory line.</p>
   <p class="lede2">I care most about the parts that keep a system honest: rules that a model cannot overrule, data that stays correct without a network, and tests that pin the behaviour down.</p>
   <nav class="contact" aria-label="Contact"><a href="https://github.com/Tofui03">GitHub</a><a href="https://www.linkedin.com/in/gwenfred-tham-262545183">LinkedIn</a><a href="mailto:gwenfredtham@gmail.com">gwenfredtham@gmail.com</a><a href="assets/Gwenfred_Tham_Resume.pdf" class="resume">Resume (PDF)</a></nav>
 </header>
@@ -23,14 +23,37 @@
     <h2 class="sec"><span id="work">Selected work</span></h2>
     <div class="grid">
     <article class="card">
+      <a class="card-link" href="projects/sdoc.html">
+        <figure class="thumb"><span class="det">doc_verification</span><img src="assets/sdoc-console.webp" width="1280" height="720" loading="lazy" alt="SDOC review console listing shipping verification cases with match, mismatch and needs-review outcomes."></figure>
+        <div class="card-body">
+          <h3>SDOC</h3>
+          <p class="kind">Hackathon project · live demo</p>
+          <p class="what">Checks a Shipping Instruction against the draft Bill of Lading. Rules decide first; an optional Gemini step extracts fields to JSON, and any value without a verbatim source quote is rejected and sent to a reviewer.</p>
+          <ul class="tags"><li>LLM (Gemini)</li><li>Pydantic</li><li>FastAPI</li><li>React</li></ul>
+          <span class="more">Read the case study</span>
+        </div>
+      </a>
+    </article>
+    <article class="card">
       <a class="card-link" href="projects/deeppcb-aoi.html">
         <figure class="thumb"><span class="det">pcb_inspection</span><img src="assets/deeppcb-boxes.webp" width="960" height="540" loading="lazy" alt="DeepPCB-AOI console showing a golden template, the test board with detector boxes, and the difference map."></figure>
         <div class="card-body">
-          
           <h3>DeepPCB-AOI</h3>
           <p class="kind">Personal project</p>
           <p class="what">Finds six kinds of copper defect on bare PCBs (0.94 F1 on the 500-pair DeepPCB test set with a 3-channel YOLOv8n) and decides pass, rework or scrap, with the reason attached.</p>
-          <ul class="tags"><li>Computer vision</li><li>YOLOv8</li><li>ONNX Runtime</li><li>FastAPI</li></ul>
+          <ul class="tags"><li>YOLOv8</li><li>ONNX Runtime</li><li>FastAPI</li><li>Docker</li></ul>
+          <span class="more">Read the case study</span>
+        </div>
+      </a>
+    </article>
+    <article class="card">
+      <a class="card-link" href="projects/pcb-inspection-viewer.html">
+        <figure class="thumb"><span class="det">inspection_client</span><img src="assets/deeppcb-boxes.webp" width="960" height="540" loading="lazy" alt="DeepPCB-AOI backend detection output: a golden template, the test board with detector boxes, and the difference map. This is not a screenshot of the PCB Inspection Viewer desktop UI."></figure>
+        <div class="card-body">
+          <h3>PCB Inspection Viewer</h3>
+          <p class="kind">Personal project · Nov 2026</p>
+          <p class="what">A C# desktop station for DeepPCB-AOI: defect overlay, batch runs, history and a daily yield dashboard, plus a guarded assistant that turns plain-English or Chinese questions into read-only SQL.</p>
+          <ul class="tags"><li>C# / .NET 8 WPF</li><li>SQLite</li><li>LLM NL→SQL</li><li>GitHub Actions</li></ul>
           <span class="more">Read the case study</span>
         </div>
       </a>
@@ -39,7 +62,6 @@
       <a class="card-link" href="projects/bj-pos.html">
         <figure class="thumb"><span class="det">retail_till</span><img src="assets/bjpos-till.webp" width="1280" height="720" loading="lazy" alt="BJ-POS till with a product grid of cement, bricks and boards and a cart totalling RM 442.00."></figure>
         <div class="card-body">
-          
           <h3>BJ-POS</h3>
           <p class="kind">Client project · rollout Nov 2026</p>
           <p class="what">Moves a hardware store in Keningau, Sabah off paper books with an offline till that tracks stock as it sells and reconciles the cash drawer at close.</p>
@@ -48,25 +70,12 @@
         </div>
       </a>
     </article>
-    <article class="card">
-      <a class="card-link" href="projects/sdoc.html">
-        <figure class="thumb"><span class="det">doc_verification</span><img src="assets/sdoc-console.webp" width="1280" height="720" loading="lazy" alt="SDOC review console listing shipping verification cases with match, mismatch and needs-review outcomes."></figure>
-        <div class="card-body">
-          
-          <h3>SDOC</h3>
-          <p class="kind">Hackathon project</p>
-          <p class="what">Checks a Shipping Instruction against the draft Bill of Lading field by field and sends anything unclear to a reviewer.</p>
-          <ul class="tags"><li>FastAPI</li><li>React</li><li>Rules + optional LLM</li></ul>
-          <span class="more">Read the case study</span>
-        </div>
-      </a>
-    </article>
     </div>
   </section>
   <section class="now" aria-labelledby="now">
     <h2 class="sec"><span id="now">Now</span></h2>
-    <ul class="now-list"><li><span class='k'>Graduated</span><span class='v'>BSc (Hons) Computer Science (AI), Asia Pacific University, completed Sep 2026 (degree conferral Nov 2026)</span></li><li><span class='k'>Shipping</span><span class='v'>BJ-POS goes live at the store in Keningau in Nov 2026</span></li><li><span class='k'>Learning</span><span class='v'>LLM and agent engineering: evaluation, tool use, guardrails</span></li><li><span class='k'>Looking for</span><span class='v'>Graduate CV / ML / AI engineering roles in Kuala Lumpur or Penang, from Dec 2026</span></li></ul>
-    <p class="updated">Updated Oct 2026</p>
+    <ul class="now-list"><li><span class="k">Graduated</span><span class="v">BSc (Hons) Computer Science (AI), Asia Pacific University, completed Sep 2026 (degree conferral Nov 2026)</span></li><li><span class="k">Shipping</span><span class="v">BJ-POS v0.1.8 released for the Keningau store (Nov 2026); PCB Inspection Viewer client built on top of DeepPCB-AOI</span></li><li><span class="k">How I work</span><span class="v">Daily AI-assisted development with Google Antigravity, reviewing and testing every change.</span></li><li><span class="k">Looking for</span><span class="v">Graduate AI / LLM / ML engineering roles in Kuala Lumpur &amp; Klang Valley (Penang also considered), from Dec 2026</span></li></ul>
+    <p class="updated">Updated Nov 2026</p>
   </section>
   <section class="reach" aria-labelledby="contact">
     <h2 class="sec"><span id="contact">Contact</span></h2>
