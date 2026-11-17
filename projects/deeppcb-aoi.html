@@ -28,8 +28,10 @@
 <li>Comes with an evaluation script that scores any detector on the 500 held-out test pairs at IoU 0.33 and 0.50, per class, and saves the worst boards as images for failure analysis.</li>
 <li>Checks each region against Class 2 / Class 3 area limits (a pixel stand-in for IPC-A-600) and keeps a per-batch count of each class in SQLite.</li>
 <li>Returns PASS, REWORK or SCRAP with a severity, and raises a halt flag when the same defect keeps repeating in a batch.</li>
-<li>Ships as a FastAPI service with a one-page web console (inspect, triage, upload, benchmark and batch telemetry routes); 87 pytest tests.</li>
-</ul></section>
+<li>Ships as a FastAPI service with a one-page web console (inspect, triage, upload, benchmark and batch telemetry routes); 89 pytest tests.</li>
+</ul>
+<p><b>Phase 1 (Nov 2026).</b> <code>GET /api/health</code> reports liveness, the detector in use, and whether the real dataset loaded. The server starts without that dataset and falls back to the bundled mock fixture in <code>core/data/mock_pcb</code>. Batch callers can set <code>return_images</code> on <code>POST /api/upload-triage</code> so the response omits image payloads. The Dockerfile is <code>python:3.12-slim</code> and includes a <code>HEALTHCHECK</code> against <code>/api/health</code>.</p>
+<p class="actions"><a class="btn" href="pcb-inspection-viewer.html">Desktop client: PCB Inspection Viewer →</a></p></section>
   <section><h2>Results</h2><p>Scores on the official DeepPCB test split (500 board pairs, 3,140 labelled defects), class-aware matching at IoU 0.33, the threshold used by the dataset's authors. Numbers are copied from <code>evaluation_results.json</code> in the repo.</p>
 <div class="table-wrap"><table class="results">
 <thead><tr><th>Detector</th><th>Input</th><th>Precision</th><th>Recall</th><th>F1</th></tr></thead>
@@ -51,7 +53,7 @@
 </dl></section>
   <section><h2>Stack</h2><ul class="tags"><li>Python</li><li>Ultralytics YOLOv8</li><li>ONNX Runtime</li><li>OpenCV</li><li>NumPy</li><li>Pydantic</li><li>FastAPI</li><li>SQLite</li><li>pytest</li></ul>
     <p class="actions"><a class="btn" href="https://github.com/Tofui03/DeepPCB-AOI">View the repo</a></p></section>
-  <section class="next"><h2>More work</h2><div class="next-grid"><a href="bj-pos.html"><span>BJ-POS</span>Moves a hardware store in Keningau, Sabah off paper books with an offline till that tracks stock as it sells and reconciles the cash drawer at close.</a><a href="sdoc.html"><span>SDOC</span>Checks a Shipping Instruction against the draft Bill of Lading field by field and sends anything unclear to a reviewer.</a></div></section>
+  <section class="next"><h2>More work</h2><div class="next-grid"><a href="sdoc.html"><span>Previous · SDOC</span>Checks a Shipping Instruction against the draft Bill of Lading. An extracted value without a verbatim source quote is rejected.</a><a href="pcb-inspection-viewer.html"><span>Next · PCB Inspection Viewer</span>A C# desktop station for DeepPCB-AOI: defect overlay, batch runs, history, a daily yield dashboard, and guarded natural-language-to-SQL.</a></div></section>
 </main>
 <footer class="wrap foot"><p><a href="../index.html">Back to home</a> · <a href="https://github.com/Tofui03">GitHub</a> · <a href="https://www.linkedin.com/in/gwenfred-tham-262545183">LinkedIn</a> · <a href="mailto:gwenfredtham@gmail.com">gwenfredtham@gmail.com</a></p></footer>
 </body>
